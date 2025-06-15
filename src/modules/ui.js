@@ -1,3 +1,5 @@
+import { container } from "webpack";
+
 function renderTodo(todo) {
   const todoContainer = document.createElement('div');
   todoContainer.classList.add('todo');
@@ -14,8 +16,15 @@ function renderTodo(todo) {
   const priority = document.createElement('p');
   priority.textContent = `Priority: ${todo.priority}`;
 
-  todoContainer.append(title, desc, dueDate, priority);
-  document.body.appendChild(todoContainer);
+  container.appendChild(title);
+  container.appendChild(description);
+  container.appendChild(dueDate);
+  container.appendChild(priority);
+
+  // The container been added to DOM
+  document.body.appendChild(container);
+  
+  
 }
 
 export default renderTodo;

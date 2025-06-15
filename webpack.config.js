@@ -8,10 +8,10 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
+  mode: "development",
   devServer: {
     static: "./dist",
   },
-  mode: "development",
   module: {
     rules: [
       {

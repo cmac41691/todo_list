@@ -1,3 +1,4 @@
+
 // createProject fuction uses an empty todo array
 function createProject(name){
     const todo = [];
@@ -9,3 +10,12 @@ const getTodos = () => todos;
 // return back to them 
 return {name, addTodo, getTodos};
 }
+
+
+
+
+
+
+
+
+

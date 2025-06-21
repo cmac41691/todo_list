@@ -1,30 +1,42 @@
-import { container } from "webpack";
+import {
+  getTodos,
+  removeTodo,
+  toggleTodo,
+} from './todo.js';
 
-function renderTodo(todo) {
-  const todoContainer = document.createElement('div');
-  todoContainer.classList.add('todo');
+const listEl = document.getElementById('todo-list');
 
-  const title = document.createElement('h3');
-  title.textContent = todo.title;
+/**
+ * Loops through all todos in memory
+ * and re-renders the <ul> entirely.
+ */
+export function renderTodos() {
+  // clear out old list
+  listEl.innerHTML = '';
 
-  const desc = document.createElement('p');
-  desc.textContent = todo.description;
+  getTodos().forEach(todo => {
+    const li = document.createElement('li');
+    li.dataset.id = todo.id;
+    li.textContent = todo.text;
+    if (todo.done) li.classList.add('done');
 
-  const dueDate = document.createElement('p');
-  dueDate.textContent = `Due: ${todo.dueDate}`;
+    // toggle done state on click
+    li.addEventListener('click', () => {
+      toggleTodo(todo.id);
+      renderTodos();
+    });
 
-  const priority = document.createElement('p');
-  priority.textContent = `Priority: ${todo.priority}`;
+    // delete button
+    const del = document.createElement('button');
+    del.textContent = '✕';
+    del.classList.add('delete-btn');
+    del.addEventListener('click', e => {
+      e.stopPropagation();
+      removeTodo(todo.id);
+      renderTodos();
+    });
+    li.append(del);
 
-  container.appendChild(title);
-  container.appendChild(description);
-  container.appendChild(dueDate);
-  container.appendChild(priority);
-
-  // The container been added to DOM
-  document.body.appendChild(container);
-  
-  
+    listEl.append(li);
+  });
 }
-
-export default renderTodo;

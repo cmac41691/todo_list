@@ -1,23 +1,22 @@
-import createTodo from "./modules/todo";
-import createProject from "./modules/project";
-import renderTodo from "./modules/ui";
-import "./style.css";
-
-// Put project here so that it can create
-const project = createProject("Default");
-
-// multiple todos created for what needs to be done 
-const todo1 = createTodo("Buy groceries", "Milk, eggs, and bread", "2025-06-14", "High");
-const todo2 = createTodo("Clean floor", "Make Lunch", "2025-06-14", "Medium");
-const todo3 = createTodo("Pay bill", "Credit Card", "2025-06-14", "Low");
+import './style.css'; 
+import { createTodo, addTodo } from './modules/todo.js';
+import { renderTodos } from './modules/ui.js';
 
 
-// Add the todos into project
-project.addTodo(todo1);
-project.addTodo(todo2);
-project.addTodo(todo3);
+const form = document.getElementById('todo-form');
+const input = document.getElementById('todo-input');
 
-// For loop all three todos then render them
-project.getTodos().forEach(todo => {
-renderTodo(todo);
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+
+  const todo = createTodo(text);
+  addTodo(todo);
+  renderTodos();
+
+  form.reset();
 });
+
+// initial render (will be empty)
+renderTodos();

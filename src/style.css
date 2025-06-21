@@ -1,5 +1,49 @@
 body {
   font-family: sans-serif;
-  background: #f5f5f5;
-  padding: 1rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+form {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+input#todo-input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+ul#todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul#todo-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+ul#todo-list li.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #c00;
+  cursor: pointer;
 }

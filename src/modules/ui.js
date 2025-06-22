@@ -1,13 +1,15 @@
+// src/modules/ui.js
 import {
   getTodos,
   removeTodo,
   toggleTodo,
+  updateTodoText,
 } from './todo.js';
 
 const listEl = document.getElementById('todo-list');
 
 /**
- * Loops through all todos in memory
+ *  Loops through all todos in memory
  * and re-renders the <ul> entirely.
  */
 export function renderTodos() {
@@ -23,20 +25,26 @@ export function renderTodos() {
     // toggle done state on click
     li.addEventListener('click', () => {
       toggleTodo(todo.id);
-      renderTodos();
+    });
+
+    // edit text on double-click
+    li.addEventListener('dblclick', () => {
+      const newText = prompt('Edit this todo:', todo.text);
+      if (newText != null) {
+        updateTodoText(todo.id, newText);
+      }
     });
 
     // delete button
-    const del = document.createElement('button');
+    const del = document.createElement('button'); 
     del.textContent = '✕';
     del.classList.add('delete-btn');
     del.addEventListener('click', e => {
       e.stopPropagation();
       removeTodo(todo.id);
-      renderTodos();
     });
-    li.append(del);
 
+    li.append(del);
     listEl.append(li);
   });
 }

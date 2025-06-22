@@ -1,7 +1,7 @@
 import './style.css'; 
 import { createTodo, addTodo } from './modules/todo.js';
 import { renderTodos } from './modules/ui.js';
-
+import { updateTodoText } from './modules/todo.js';
 
 const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');

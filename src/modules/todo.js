@@ -15,11 +15,12 @@ const todos = loadTodos();
  */
 
 //  export createTodo
-export function createTodo(text) {
+export function createTodo(text, dueDate) {
   return {
     id: Date.now().toString(),
     text,
-    done: false
+    done: false,
+    dueDate,
   };
 }
 

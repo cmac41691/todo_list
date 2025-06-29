@@ -10,9 +10,28 @@ const todos = loadTodos();
 
 /**
  * A facory for a new todo
- * @param {string} text 
+ * @param {'all'|'today'|'overdue'|'upcoming'} when 
  * 
  */
+
+export function filterTodosByDueDates(when){
+const todos = getTodos();
+const today = new Date().toISOString().slice(0, 10);
+
+switch (when) {
+  case 'today':
+    return todos.filter()
+  case 'overdue':
+    return todos.filter()
+  case 'upcoming':
+    return todos.filter()
+case 'all':
+    break;
+  default:
+    return todos;
+  }
+
+}
 
 //  export createTodo
 export function createTodo(text, dueDate) {

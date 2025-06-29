@@ -44,6 +44,13 @@ ul#todo-list {
   padding: 0;
 }
 
+.todo-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
 ul#todo-list li {
   display: flex;
   justify-content: space-between;
@@ -55,6 +62,17 @@ ul#todo-list li {
 ul#todo-list li.done {
   text-decoration: line-through;
   opacity: 0.6;
+}
+
+.filter-bar{
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#filter-select{
+  padding: 0.25rem;
+  font-size: 0.9rem;
 }
 
 .delete-btn {

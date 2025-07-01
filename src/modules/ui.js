@@ -8,19 +8,20 @@ import {
 
 const listEl = document.getElementById('todo-list');
 
+/**
+ * Renders the provided list of todos (defaulting to all)
+ */
 export function renderTodos(list = getTodos()) {
-  listEl.innerHTML = '';//  clear out the old list
-  listEl.forEach( todo => {
+  // clear out the old list
+  listEl.innerHTML = '';
 
-  });
-
-  // This rebuild list from current state of todos
-  getTodos().forEach(todo => {
+  // rebuild list from passed-in items
+  list.forEach(todo => {
     const li = document.createElement('li');
     li.dataset.id = todo.id;
     li.classList.toggle('done', todo.done);
 
-    // build the content wrapper in the Div
+    // wrap text and due date
     const content = document.createElement('div');
     content.classList.add('todo-content');
 
@@ -29,7 +30,7 @@ export function renderTodos(list = getTodos()) {
     textEl.textContent = todo.text;
     content.append(textEl);
 
-    // due date (if any)
+    // due-date, if provided
     if (todo.dueDate) {
       const dueEl = document.createElement('span');
       dueEl.classList.add('due');
@@ -37,13 +38,13 @@ export function renderTodos(list = getTodos()) {
       content.append(dueEl);
     }
 
-    // wire up toggle-done
+    // toggle done state on click
     li.addEventListener('click', () => {
       toggleTodo(todo.id);
       renderTodos();
     });
 
-    //  wire up edit
+    // edit text on double-click
     li.addEventListener('dblclick', () => {
       const newText = prompt('Edit this todo:', todo.text);
       if (newText != null) {
@@ -52,7 +53,7 @@ export function renderTodos(list = getTodos()) {
       }
     });
 
-    //  delete button
+    // delete button
     const del = document.createElement('button');
     del.classList.add('delete-btn');
     del.textContent = '✕';
@@ -62,7 +63,7 @@ export function renderTodos(list = getTodos()) {
       renderTodos();
     });
 
-    //  assemble it all together
+    // assemble and append
     li.append(content, del);
     listEl.append(li);
   });

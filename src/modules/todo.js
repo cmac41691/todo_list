@@ -14,6 +14,27 @@ const todos = loadTodos();
  * 
  */
 
+
+/**
+ * @param {Todo[]} list
+ * @param {'none'|'asc'|'desc'} order
+ */
+export function sortTodosByDueDate(list = getTodos(), order = 'none'){
+  if (order === 'none') return list;
+// This will create a limited copy and it wont mutate the current source
+const copy = [...list];
+return copy.sort((a, b) => {
+// The missing dates go last
+if (!a.dueDate) return 1;
+if (!b.dueDate) return -1; {
+  return order === 'asc'
+  ?a.dueDate.localeCompare(b.dueDate)
+  :b.dueDatelocaleCompare(a.dueDate);
+}
+});
+
+}
+
 export function filterTodosByDueDates(when){
 const todos = getTodos();
 const today = new Date().toISOString().slice(0, 10);

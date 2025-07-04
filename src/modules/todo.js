@@ -1,73 +1,20 @@
-
-// This lets todos to hold everything in memory while stores it in factory
+// src/modules/todo.js
 import { loadTodos, saveTodos } from './storage.js';
 import { renderTodos } from './ui.js';
 
-// src/modules/todo.js
-
-// Stores your in-memory store
 const todos = loadTodos();
 
-/**
- * A facory for a new todo
- * @param {'all'|'today'|'overdue'|'upcoming'} when 
- * 
- */
-
-
-/**
- * @param {Todo[]} list
- * @param {'none'|'asc'|'desc'} order
- */
-export function sortTodosByDueDate(list = getTodos(), order = 'none'){
-  if (order === 'none') return list;
-// This will create a limited copy and it wont mutate the current source
-const copy = [...list];
-return copy.sort((a, b) => {
-// The missing dates go last
-if (!a.dueDate) return 1;
-if (!b.dueDate) return -1; {
-  return order === 'asc'
-  ?a.dueDate.localeCompare(b.dueDate)
-  :b.dueDatelocaleCompare(a.dueDate);
-}
-});
-
-}
-
-export function filterTodosByDueDates(when){
-const todos = getTodos();
-const today = new Date().toISOString().slice(0, 10);
-
-switch (when) {
-  case 'today':
-    return todos.filter()
-  case 'overdue':
-    return todos.filter()
-  case 'upcoming':
-    return todos.filter()
-case 'all':
-    break;
-  default:
-    return todos;
-  }
-
-}
-
-//  export createTodo
-export function createTodo(text, dueDate) {
-  return {
-    id: Date.now().toString(),
-    text,
-    done: false,
-    dueDate,
-  };
-}
-
+/** Always get the live list */
 export function getTodos() {
   return todos;
 }
 
+/** Create a new Todo */
+export function createTodo(text, dueDate) {
+  return { id: Date.now().toString(), text, done: false, dueDate };
+}
+
+/** Add, remove, toggle, edit text… unchanged **/
 export function addTodo(todo) {
   todos.push(todo);
   saveTodos(todos);
@@ -79,7 +26,6 @@ export function removeTodo(id) {
   if (idx > -1) todos.splice(idx, 1);
   saveTodos(todos);
   renderTodos();
-
 }
 
 export function toggleTodo(id) {
@@ -89,12 +35,59 @@ export function toggleTodo(id) {
   renderTodos();
 }
 
-export function updateTodoText(id, newText){
+export function updateTodoText(id, newText) {
   const t = todos.find(t => t.id === id);
-  if(!t) return;
-  t.text = newText;
-  saveTodos(todos);
-  renderTodos();
+  if (t) {
+    t.text = newText;
+    saveTodos(todos);
+    renderTodos();
+  }
 }
-// render will be initial
-renderTodos();
+
+export function updateTodoDueDate(id, newDate) {
+  const t = todos.find(t => t.id === id);
+  if (t) {
+    t.dueDate = newDate;
+    saveTodos(todos);
+    renderTodos();
+  }
+}
+
+/** FILTER BUILDER  */
+export function filterTodosByDueDates(when) {
+  const all = getTodos();
+  const today = new Date().toISOString().slice(0, 10);
+
+  switch (when) {
+    case 'today':
+      return all.filter(t => t.dueDate === today);
+
+    case 'overdue':
+      return all.filter(t => t.dueDate && t.dueDate < today);
+
+    case 'upcoming':
+      return all.filter(t => t.dueDate && t.dueDate > today);
+
+    case 'all':
+    default:
+      return all;
+  }
+}
+
+/** SORT BUILDER  */
+export function sortTodosByDueDate(list = getTodos(), order = 'none') {
+  if (order === 'none') return list;
+
+  // copy so we don’t mutate the original array
+  const arr = [...list];
+  return arr.sort((a, b) => {
+    // push missing dates to the bottom
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    // lexicographic compare works on YYYY-MM-DD
+    return order === 'asc'
+      ? a.dueDate.localeCompare(b.dueDate)
+      : b.dueDate.localeCompare(a.dueDate);
+  });
+}
+

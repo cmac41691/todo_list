@@ -4,6 +4,7 @@ import {
   removeTodo,
   toggleTodo,
   updateTodoText,
+  updateTodoDueDate,
 } from './todo.js';
 
 const listEl = document.getElementById('todo-list');
@@ -21,7 +22,7 @@ export function renderTodos(list = getTodos()) {
     li.dataset.id = todo.id;
     li.classList.toggle('done', todo.done);
 
-    // wrap text and due date
+    // wrap text + due date
     const content = document.createElement('div');
     content.classList.add('todo-content');
 
@@ -35,13 +36,27 @@ export function renderTodos(list = getTodos()) {
       const dueEl = document.createElement('span');
       dueEl.classList.add('due');
       dueEl.textContent = `(Due: ${todo.dueDate})`;
+
+      //  click to edit the due date
+      dueEl.addEventListener('click', e => {
+        e.stopPropagation(); // prevent toggling done
+        const newDate = prompt(
+          'Edit due date (YYYY-MM-DD):',
+          todo.dueDate
+        );
+        if (newDate !== null) {
+          updateTodoDueDate(todo.id, newDate);
+        }
+      });
+
       content.append(dueEl);
     }
 
-    // toggle done state on click
+    li.append(content);
+
+    // toggle done on click
     li.addEventListener('click', () => {
       toggleTodo(todo.id);
-      renderTodos();
     });
 
     // edit text on double-click
@@ -49,7 +64,6 @@ export function renderTodos(list = getTodos()) {
       const newText = prompt('Edit this todo:', todo.text);
       if (newText != null) {
         updateTodoText(todo.id, newText);
-        renderTodos();
       }
     });
 
@@ -60,11 +74,9 @@ export function renderTodos(list = getTodos()) {
     del.addEventListener('click', e => {
       e.stopPropagation();
       removeTodo(todo.id);
-      renderTodos();
     });
 
-    // assemble and append
-    li.append(content, del);
+    li.append(del);
     listEl.append(li);
   });
 }

@@ -57,7 +57,6 @@ export function updateTodoDueDate(id, newDate) {
 export function filterTodosByDueDates(when) {
   const all = getTodos();
   const today = new Date().toISOString().slice(0, 10);
-
   switch (when) {
     case 'today':
       return all.filter(t => t.dueDate === today);
@@ -66,13 +65,17 @@ export function filterTodosByDueDates(when) {
       return all.filter(t => t.dueDate && t.dueDate < today);
 
     case 'upcoming':
-      return all.filter(t => t.dueDate && t.dueDate > today);
 
-    case 'all':
-    default:
-      return all;
+      return all.filter(t => t.dueDate && t.dueDate > today);
+  case 'all':  
+     default:           
+    return all;
   }
 }
+    
+  
+    
+
 
 /** SORT BUILDER  */
 export function sortTodosByDueDate(list = getTodos(), order = 'none') {

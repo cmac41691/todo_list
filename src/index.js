@@ -4,6 +4,7 @@ import { renderTodos }                 from './modules/ui.js';
 import { filterTodosByDueDates,
          sortTodosByDueDate }        from './modules/todo.js';
 
+         
 const form         = document.getElementById('todo-form');
 const input        = document.getElementById('todo-input');
 const due          = document.getElementById('todo-due');
@@ -16,21 +17,21 @@ function refreshView() {
   const sorted   = sortTodosByDueDate(filtered, sortSelect.value);
   renderTodos(sorted);
 }
-
+// acts as the wiring point for select
 filterSelect.addEventListener('change', refreshView);
 sortSelect  .addEventListener('change', refreshView);
 
 form.addEventListener('submit', e => {
   e.preventDefault();
   const text = input.value.trim();
-  if (!text) return;
+  if (!text) return; // blank entries get rejected
 
   const todo = createTodo(text, due.value);
   addTodo(todo);
   refreshView();
-
   form.reset();
-});
+});  
+
 
 // initial render
 refreshView();

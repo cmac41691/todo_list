@@ -2,6 +2,7 @@
 import { loadTodos, saveTodos } from './storage.js';
 import { renderTodos } from './ui.js';
 
+// keep the array live in memory
 const todos = loadTodos();
 
 /** Always get the live list */
@@ -73,9 +74,6 @@ export function filterTodosByDueDates(when) {
   }
 }
     
-  
-    
-
 
 /** SORT BUILDER  */
 export function sortTodosByDueDate(list = getTodos(), order = 'none') {

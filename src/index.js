@@ -1,10 +1,18 @@
+// src/index.js
 import './style.css';
-import { createTodo, addTodo }         from './modules/todo.js';
-import { renderTodos }                 from './modules/ui.js';
-import { filterTodosByDueDates,
-         sortTodosByDueDate }        from './modules/todo.js';
+import { createTodo, addTodo }             from './modules/todo.js';
+import { renderTodos }                     from './modules/ui.js';
+import {
+  loadProjects,
+  createProject,
+  selectProject,
+  getProjects,
+  getCurrentProject
+} from './modules/project.js';
 
-         
+// populate a <select id="project-select"> based on getProjects(),
+// listen for change → selectProject() → renderTodos(getCurrentProject().todos)
+
 const form         = document.getElementById('todo-form');
 const input        = document.getElementById('todo-input');
 const due          = document.getElementById('todo-due');
@@ -17,6 +25,7 @@ function refreshView() {
   const sorted   = sortTodosByDueDate(filtered, sortSelect.value);
   renderTodos(sorted);
 }
+refreshView();
 // acts as the wiring point for select
 filterSelect.addEventListener('change', refreshView);
 sortSelect  .addEventListener('change', refreshView);

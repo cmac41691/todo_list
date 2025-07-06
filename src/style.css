@@ -82,3 +82,44 @@ ul#todo-list li.done {
   color: #c00;
   cursor: pointer;
 }
+/* -----------------------------
+   UI POLISH (hover & focus etc)
+   ----------------------------- */
+
+/* row hover */
+ul#todo-list li:hover {
+  background: #fafafa;
+}
+
+/* due-date span */
+.due {
+  color: #777;
+}
+.due:hover,
+.due:focus {
+  color: #333;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* delete button */
+.delete-btn:hover,
+.delete-btn:focus {
+  background: rgba(255, 0, 0, 0.1);
+  outline: none;
+}
+
+/* consistent focus outlines */
+input:focus,
+select:focus,
+button:focus,
+.due:focus {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* sort select styling */
+#sort-select {
+  padding: 0.25rem;
+  font-size: 0.9rem;
+}

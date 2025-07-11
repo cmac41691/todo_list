@@ -1,94 +1,98 @@
 // src/modules/todo.js
+
+// only persistence helpers live in storage.js
 import { loadTodos, saveTodos } from './storage.js';
+
+// project-scoped helpers live in project.js
+import {
+  getCurrentProject,
+  addTodoToProject,
+  removeTodoFromProject,
+} from './project.js';
+
 import { renderTodos } from './ui.js';
 
-// keep the array live in memory
+// now your add/remove/toggle functions can decide whether
+// to push into the “flat” array or into the current project:
+
 const todos = loadTodos();
 
-/** Always get the live list */
 export function getTodos() {
   return todos;
 }
 
-/** Create a new Todo */
 export function createTodo(text, dueDate) {
   return { id: Date.now().toString(), text, done: false, dueDate };
 }
 
-/** Add, remove, toggle, edit text… unchanged **/
 export function addTodo(todo) {
-  todos.push(todo);
-  saveTodos(todos);
-  renderTodos();
+  const proj = getCurrentProject();
+  if (proj) {
+    addTodoToProject(todo);
+  } else {
+    todos.push(todo);
+    saveTodos(todos);
+    renderTodos();
+  }
 }
 
 export function removeTodo(id) {
-  const idx = todos.findIndex(t => t.id === id);
-  if (idx > -1) todos.splice(idx, 1);
-  saveTodos(todos);
-  renderTodos();
+  const proj = getCurrentProject();
+  if (proj) {
+    removeTodoFromProject(id);
+  } else {
+    const idx = todos.findIndex(t => t.id === id);
+    if (idx > -1) todos.splice(idx, 1);
+    saveTodos(todos);
+    renderTodos();
+  }
 }
 
+/** Toggle done/undone */
 export function toggleTodo(id) {
-  const t = todos.find(t => t.id === id);
-  if (t) t.done = !t.done;
-  saveTodos(todos);
-  renderTodos();
+  const proj = getCurrentProject()
+  if (!proj) throw new Error('No project selected')
+  const t = proj.todos.find(t => t.id === id)
+  if (t) t.done = !t.done
 }
 
+/** Update text inline */
 export function updateTodoText(id, newText) {
-  const t = todos.find(t => t.id === id);
-  if (t) {
-    t.text = newText;
-    saveTodos(todos);
-    renderTodos();
-  }
+  const proj = getCurrentProject()
+  if (!proj) throw new Error('No project selected')
+  const t = proj.todos.find(t => t.id === id)
+  if (t) t.text = newText
 }
 
+/** Update due-date inline */
 export function updateTodoDueDate(id, newDate) {
-  const t = todos.find(t => t.id === id);
-  if (t) {
-    t.dueDate = newDate;
-    saveTodos(todos);
-    renderTodos();
-  }
+  const proj = getCurrentProject()
+  if (!proj) throw new Error('No project selected')
+  const t = proj.todos.find(t => t.id === id)
+  if (t) t.dueDate = newDate
 }
 
-/** FILTER BUILDER  */
+/** Filter helper — same as before */
 export function filterTodosByDueDates(when) {
-  const all = getTodos();
-  const today = new Date().toISOString().slice(0, 10);
+  const all = getTodos()
+  const today = new Date().toISOString().slice(0, 10)
   switch (when) {
-    case 'today':
-      return all.filter(t => t.dueDate === today);
-
-    case 'overdue':
-      return all.filter(t => t.dueDate && t.dueDate < today);
-
-    case 'upcoming':
-
-      return all.filter(t => t.dueDate && t.dueDate > today);
-  case 'all':  
-     default:           
-    return all;
+    case 'today':   return all.filter(t => t.dueDate === today)
+    case 'overdue': return all.filter(t => t.dueDate && t.dueDate < today)
+    case 'upcoming':return all.filter(t => t.dueDate && t.dueDate > today)
+    default:        return all
   }
 }
-    
 
-/** SORT BUILDER  */
+/** Sort helper — same as before */
 export function sortTodosByDueDate(list = getTodos(), order = 'none') {
-  if (order === 'none') return list;
-
-  // copy so we don’t mutate the original array
-  const arr = [...list];
+  if (order === 'none') return list
+  const arr = [...list]
   return arr.sort((a, b) => {
-    // push missing dates to the bottom
-    if (!a.dueDate) return 1;
-    if (!b.dueDate) return -1;
-    // lexicographic compare works on YYYY-MM-DD
+    if (!a.dueDate) return 1
+    if (!b.dueDate) return -1
     return order === 'asc'
       ? a.dueDate.localeCompare(b.dueDate)
-      : b.dueDate.localeCompare(a.dueDate);
-  });
+      : b.dueDate.localeCompare(a.dueDate)
+  })
 }
-

@@ -1,46 +1,63 @@
 // src/index.js
 import './style.css';
-import { createTodo, addTodo }             from './modules/todo.js';
-import { renderTodos }                     from './modules/ui.js';
+
 import {
-  loadProjects,
-  createProject,
+  createTodo,
+  addTodo,
+  filterTodosByDueDates,
+  sortTodosByDueDate,
+} from './modules/todo.js';
+
+import {
   selectProject,
+  createProject,       // only if you have a form to make new projects
   getProjects,
-  getCurrentProject
+  getCurrentProject,
 } from './modules/project.js';
 
-// populate a <select id="project-select"> based on getProjects(),
-// listen for change → selectProject() → renderTodos(getCurrentProject().todos)
+import {
+  renderProjects,
+  renderTodos,
+} from './modules/ui.js';
 
-const form         = document.getElementById('todo-form');
-const input        = document.getElementById('todo-input');
-const due          = document.getElementById('todo-due');
-const filterSelect = document.getElementById('filter-select');
-const sortSelect   = document.getElementById('sort-select');
+// Grab your DOM elements
+const form          = document.getElementById('todo-form');
+const input         = document.getElementById('todo-input');
+const due           = document.getElementById('todo-due');
+const projectSelect = document.getElementById('project-select');
+const filterSelect  = document.getElementById('filter-select');
+const sortSelect    = document.getElementById('sort-select');
 
 function refreshView() {
-  // first filter, then sort, then render
+  // 1) filter, 2) sort, 3) render
   const filtered = filterTodosByDueDates(filterSelect.value);
   const sorted   = sortTodosByDueDate(filtered, sortSelect.value);
   renderTodos(sorted);
 }
-refreshView();
-// acts as the wiring point for select
-filterSelect.addEventListener('change', refreshView);
-sortSelect  .addEventListener('change', refreshView);
 
+// INITIAL HOOKUPS
+
+// Populate project dropdown & highlight current
+renderProjects();
+projectSelect.addEventListener('change', e => {
+  selectProject(e.target.value);
+  renderProjects();
+  refreshView();
+});
+
+// Re‐render on filter/sort changes
+filterSelect.addEventListener('change', refreshView);
+sortSelect.addEventListener('change', refreshView);
+
+// Add new todo
 form.addEventListener('submit', e => {
   e.preventDefault();
   const text = input.value.trim();
-  if (!text) return; // blank entries get rejected
-
-  const todo = createTodo(text, due.value);
-  addTodo(todo);
+  if (!text) return;
+  addTodo(createTodo(text, due.value));
   refreshView();
   form.reset();
-});  
+});
 
-
-// initial render
+// First render of the todo list
 refreshView();

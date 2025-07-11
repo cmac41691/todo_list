@@ -1,95 +1,37 @@
-// src/modules/project.js
-import { loadProjects, saveProjects } from './storage.js';
-import { getTodos, saveTodos } from './todo.js';
-import { renderProjects, renderTodos } from './ui.js';
+// src/modules/storage.js
 
-// load or initialize the projects array
-const projects = loadProjects();
+// ————— PROJECTS PERSISTENCE —————
+const PROJECTS_KEY = 'todo_projects';
 
-// track the currently selected project ID (persisted in storage)
-let currentProjectId = projects.length ? projects[0].id : null;
-
-/** Get all projects */
-export function getProjects() {
-  return projects;
+/**
+ * Load the projects array from localStorage (or return []).
+ */
+export function loadProjects() {
+  const json = localStorage.getItem(PROJECTS_KEY);
+  return json ? JSON.parse(json) : [];
 }
 
-/** Get the currently selected project object */
-export function getCurrentProject() {
-  return projects.find(p => p.id === currentProjectId) || null;
+/**
+ * Save the projects array back to localStorage.
+ */
+export function saveProjects(projects) {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
 }
 
-/** Change the current project */
-export function selectProject(id) {
-  if (projects.some(p => p.id === id)) {
-    currentProjectId = id;
-    saveProjects(projects, currentProjectId);
-    renderProjects();
-    // after switching project, re-render its todos
-    renderTodos(getCurrentProject().todos);
-  }
+// ————— TODOS PERSISTENCE —————
+const TODOS_KEY = 'todo_items';
+
+/**
+ * Load the todos array from localStorage (or return []).
+ */
+export function loadTodos() {
+  const json = localStorage.getItem(TODOS_KEY);
+  return json ? JSON.parse(json) : [];
 }
 
-/** Create a new project */
-export function createProject(name) {
-  const id = Date.now().toString();
-  const newProj = { id, name, todos: [] };
-  projects.push(newProj);
-  currentProjectId = id;
-  saveProjects(projects, currentProjectId);
-  renderProjects();
-  renderTodos(newProj.todos);
-}
-
-/** Rename an existing project */
-export function renameProject(id, newName) {
-  const p = projects.find(p => p.id === id);
-  if (p) {
-    p.name = newName;
-    saveProjects(projects, currentProjectId);
-    renderProjects();
-  }
-}
-
-/** Delete a project by its id */
-export function removeProject(id) {
-  const idx = projects.findIndex(p => p.id === id);
-  if (idx > -1) {
-    projects.splice(idx, 1);
-    // if we deleted the current project, select another or null
-    if (currentProjectId === id) {
-      currentProjectId = projects.length ? projects[0].id : null;
-    }
-    saveProjects(projects, currentProjectId);
-    renderProjects();
-    renderTodos(getCurrentProject()?.todos || []);
-  }
-}
-
-/** Add a todo object to the current project */
-export function addTodoToProject(todo) {
-  const proj = getCurrentProject();
-  if (!proj) return;
-  proj.todos.push(todo);
-  saveProjects(projects, currentProjectId);
-  renderTodos(proj.todos);
-}
-
-/** Remove a todo from current project by id */
-export function removeTodoFromProject(todoId) {
-  const proj = getCurrentProject();
-  if (!proj) return;
-  const idx = proj.todos.findIndex(t => t.id === todoId);
-  if (idx > -1) proj.todos.splice(idx, 1);
-  saveProjects(projects, currentProjectId);
-  renderTodos(proj.todos);
-}
-
-// on load, ensure there's at least one project
-if (!projects.length) {
-  createProject('Default');
-} else {
-  // restore projects view and todos of the last-selected
-  renderProjects();
-  if (currentProjectId) renderTodos(getCurrentProject().todos);
+/**
+ * Save the todos array back to localStorage.
+ */
+export function saveTodos(todos) {
+  localStorage.setItem(TODOS_KEY, JSON.stringify(todos));
 }

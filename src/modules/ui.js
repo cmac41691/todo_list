@@ -3,17 +3,40 @@ import {
   getTodos,
   removeTodo,
   toggleTodo,
-  updateTodoText,
+  updateTodoText,      // remove if not using inline editing
   updateTodoDueDate,
 } from './todo.js';
 
-const listEl = document.getElementById('todo-list');
+import {
+  getProjects,
+  getCurrentProject,
+} from './project.js';
+
+const listEl    = document.getElementById('todo-list');
+const projectEl = document.getElementById('project-select');
 
 /**
- * 
- * This renders the entire lists of todo
+ * Populate the “Project” select with all projects,
+ * and mark the current one as selected.
  */
-// src/modules/ui.js
+export function renderProjects() {
+  projectEl.innerHTML = '';
+
+  getProjects().forEach(proj => {
+    const opt = document.createElement('option');
+    opt.value       = proj.id;
+    opt.textContent = proj.name;
+    if (proj.id === getCurrentProject()?.id) {
+      opt.selected = true;
+    }
+    projectEl.appendChild(opt);
+  });
+}
+
+/**
+ * Render the entire list of todos (for the current project),
+ * with delete, toggle, date-edit, and optional inline edit.
+ */
 export function renderTodos(list = getTodos()) {
   listEl.innerHTML = '';
 
@@ -22,28 +45,36 @@ export function renderTodos(list = getTodos()) {
     li.dataset.id = todo.id;
     li.classList.toggle('done', todo.done);
 
+    // Toggle done when clicking the list item
+    li.addEventListener('click', () => {
+      toggleTodo(todo.id);
+      renderTodos();
+    });
+
     const content = document.createElement('div');
     content.classList.add('todo-content');
 
-    // The text 
+    // Text (double-click to edit)
     const textEl = document.createElement('span');
     textEl.textContent = todo.text;
+    textEl.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      const newText = prompt('Edit task text:', todo.text);
+      if (newText !== null) {
+        updateTodoText(todo.id, newText.trim());
+        renderTodos();
+      }
+    });
     content.append(textEl);
 
-    // The due-date 
+    // Due-date (click to edit)
     if (todo.dueDate) {
       const dueEl = document.createElement('span');
       dueEl.classList.add('due');
       dueEl.textContent = `(Due: ${todo.dueDate})`;
-
       dueEl.addEventListener('click', e => {
-        e.stopPropagation();                  // don’t toggle “done”
-        const current = todo.dueDate || '';
-        const newDate = prompt(
-          'Edit due date (YYYY-MM-DD):',
-          current
-        );
-
+        e.stopPropagation();
+        const newDate = prompt('Edit due date (YYYY-MM-DD):', todo.dueDate);
         if (newDate !== null) {
           if (newDate && isNaN(Date.parse(newDate))) {
             alert('Invalid date format!');
@@ -53,12 +84,10 @@ export function renderTodos(list = getTodos()) {
           renderTodos();
         }
       });
-
-      // only append once, after wiring up the listener
       content.append(dueEl);
     }
 
-    // the delete button, toggle, etc.  
+    // Delete button
     const del = document.createElement('button');
     del.classList.add('delete-btn');
     del.textContent = '✕';
@@ -68,7 +97,6 @@ export function renderTodos(list = getTodos()) {
       renderTodos();
     });
 
-    //This will assemble and append everything
     li.append(content, del);
     listEl.append(li);
   });

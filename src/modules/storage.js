@@ -1,6 +1,6 @@
 // src/modules/storage.js
 
-// ————— PROJECTS PERSISTENCE —————
+// —————————————— PROJECTS PERSISTENCE ——————————————
 const PROJECTS_KEY = 'todo_projects';
 
 /**
@@ -18,7 +18,7 @@ export function saveProjects(projects) {
   localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
 }
 
-// ————— TODOS PERSISTENCE —————
+// —————————————— TODOS PERSISTENCE ——————————————
 const TODOS_KEY = 'todo_items';
 
 /**

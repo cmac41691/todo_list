@@ -7,7 +7,6 @@
     content="width=device-width, initial-scale=1.0"
   />
   <title>Todo List</title>
- 
 </head>
 <body>
   <h1>Todo List</h1>
@@ -24,28 +23,29 @@
     <input type="date" id="todo-due" />
   </form>
 
-<div class="filter-bar">
- <label for="filter-select">Show:</label>
-<select id="filter-select">
- <option value="all">All tasks</option>
- <option value="today">Due Today</option>
- <option value="overdue">Overdue</option>
- <option value="upcoming">Upcoming</option>
-  </select>
+  <div class="filter-bar">
+    <label for="filter-select">Show:</label>
+    <select id="filter-select">
+      <option value="all">All tasks</option>
+      <option value="today">Due Today</option>
+      <option value="overdue">Overdue</option>
+      <option value="upcoming">Upcoming</option>
+    </select>
 
-<lable for="project-select">Project</lable>
-<select id="project-select"></select>  
-<label for="sort-select">Sort:</label>
-<select id="sort-select">
-<option value="none">None</option>
-<option value="asc">Soonest</option>
-<option value="desc">Latest</option>
-  </select>
-</div>
+    <label for="project-select">Project:</label>
+    <select id="project-select"></select>
+
+    <label for="sort-select">Sort:</label>
+    <select id="sort-select">
+      <option value="none">None</option>
+      <option value="asc">Soonest</option>
+      <option value="desc">Latest</option>
+    </select>
+  </div>
+
   <ul id="todo-list"></ul>
 
   <!-- Webpack will inject main.js here -->
   <script src="main.js"></script>
-</body>
+</body> 
 </html>
-

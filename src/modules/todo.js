@@ -1,19 +1,11 @@
 // src/modules/todo.js
-
-// only persistence helpers live in storage.js
-import { loadTodos, saveTodos } from './storage.js';
-
-// project-scoped helpers live in project.js
 import {
   getCurrentProject,
   addTodoToProject,
   removeTodoFromProject,
 } from './project.js';
-
+import { loadTodos, saveTodos } from './storage.js';
 import { renderTodos } from './ui.js';
-
-// now your add/remove/toggle functions can decide whether
-// to push into the “flat” array or into the current project:
 
 const todos = loadTodos();
 
@@ -32,8 +24,8 @@ export function addTodo(todo) {
   } else {
     todos.push(todo);
     saveTodos(todos);
-    renderTodos();
   }
+  renderTodos(getTodos());
 }
 
 export function removeTodo(id) {
@@ -42,57 +34,70 @@ export function removeTodo(id) {
     removeTodoFromProject(id);
   } else {
     const idx = todos.findIndex(t => t.id === id);
-    if (idx > -1) todos.splice(idx, 1);
-    saveTodos(todos);
-    renderTodos();
+    if (idx > -1) {
+      todos.splice(idx, 1);
+      saveTodos(todos);
+    }
   }
+  renderTodos(getTodos());
 }
 
-/** Toggle done/undone */
 export function toggleTodo(id) {
-  const proj = getCurrentProject()
-  if (!proj) throw new Error('No project selected')
-  const t = proj.todos.find(t => t.id === id)
-  if (t) t.done = !t.done
+  const proj = getCurrentProject();
+  const list = proj ? proj.todos : todos;
+  const item = list.find(t => t.id === id);
+  if (item) {
+    item.done = !item.done;
+    if (proj) saveProjects(getProjects());
+    else saveTodos(todos);
+  }
+  renderTodos(getTodos());
 }
 
-/** Update text inline */
 export function updateTodoText(id, newText) {
-  const proj = getCurrentProject()
-  if (!proj) throw new Error('No project selected')
-  const t = proj.todos.find(t => t.id === id)
-  if (t) t.text = newText
-}
-
-/** Update due-date inline */
-export function updateTodoDueDate(id, newDate) {
-  const proj = getCurrentProject()
-  if (!proj) throw new Error('No project selected')
-  const t = proj.todos.find(t => t.id === id)
-  if (t) t.dueDate = newDate
-}
-
-/** Filter helper — same as before */
-export function filterTodosByDueDates(when) {
-  const all = getTodos()
-  const today = new Date().toISOString().slice(0, 10)
-  switch (when) {
-    case 'today':   return all.filter(t => t.dueDate === today)
-    case 'overdue': return all.filter(t => t.dueDate && t.dueDate < today)
-    case 'upcoming':return all.filter(t => t.dueDate && t.dueDate > today)
-    default:        return all
+  const proj = getCurrentProject();
+  const list = proj ? proj.todos : todos;
+  const t = list.find(t => t.id === id);
+  if (t) {
+    t.text = newText;
+    if (proj) saveProjects(getProjects());
+    else saveTodos(todos);
+    renderTodos(getTodos());
   }
 }
 
-/** Sort helper — same as before */
-export function sortTodosByDueDate(list = getTodos(), order = 'none') {
-  if (order === 'none') return list
-  const arr = [...list]
-  return arr.sort((a, b) => {
-    if (!a.dueDate) return 1
-    if (!b.dueDate) return -1
-    return order === 'asc'
-      ? a.dueDate.localeCompare(b.dueDate)
-      : b.dueDate.localeCompare(a.dueDate)
-  })
+export function updateTodoDueDate(id, newDate) {
+  const proj = getCurrentProject();
+  const list = proj ? proj.todos : todos;
+  const t = list.find(t => t.id === id);
+  if (t) {
+    t.dueDate = newDate;
+    if (proj) saveProjects(getProjects());
+    else saveTodos(todos);
+    renderTodos(getTodos());
+  }
+}
+
+export function filterTodosByDueDates(when, list = getTodos()) {
+  const today = new Date().toISOString().slice(0, 10);
+  switch (when) {
+    case 'today':
+      return list.filter(t => t.dueDate === today);
+    case 'overdue':
+      return list.filter(t => t.dueDate < today);
+    case 'upcoming':
+      return list.filter(t => t.dueDate > today);
+    default:
+      return list;
+  }
+}
+
+export function sortTodosByDueDate(list, order = 'none') {
+  if (order === 'asc') {
+    return [...list].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  }
+  if (order === 'desc') {
+    return [...list].sort((a, b) => b.dueDate.localeCompare(a.dueDate));
+  }
+  return list;
 }

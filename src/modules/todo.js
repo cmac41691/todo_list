@@ -3,9 +3,9 @@ import {
   getCurrentProject,
   addTodoToProject,
   removeTodoFromProject,
+  getProjects,
 } from './project.js';
-import { loadTodos, saveTodos } from './storage.js';
-import { renderTodos } from './ui.js';
+import { loadTodos, saveTodos, saveProjects } from './storage.js';
 
 const todos = loadTodos();
 
@@ -21,17 +21,19 @@ export function addTodo(todo) {
   const proj = getCurrentProject();
   if (proj) {
     addTodoToProject(todo);
+    saveProjects(getProjects());
   } else {
     todos.push(todo);
     saveTodos(todos);
   }
-  renderTodos(getTodos());
+  // ← no render here
 }
 
 export function removeTodo(id) {
   const proj = getCurrentProject();
   if (proj) {
     removeTodoFromProject(id);
+    saveProjects(getProjects());
   } else {
     const idx = todos.findIndex(t => t.id === id);
     if (idx > -1) {
@@ -39,7 +41,7 @@ export function removeTodo(id) {
       saveTodos(todos);
     }
   }
-  renderTodos(getTodos());
+  // ← no render here
 }
 
 export function toggleTodo(id) {
@@ -48,10 +50,9 @@ export function toggleTodo(id) {
   const item = list.find(t => t.id === id);
   if (item) {
     item.done = !item.done;
-    if (proj) saveProjects(getProjects());
-    else saveTodos(todos);
+    proj ? saveProjects(getProjects()) : saveTodos(todos);
   }
-  renderTodos(getTodos());
+  // ← no render here
 }
 
 export function updateTodoText(id, newText) {
@@ -60,10 +61,9 @@ export function updateTodoText(id, newText) {
   const t = list.find(t => t.id === id);
   if (t) {
     t.text = newText;
-    if (proj) saveProjects(getProjects());
-    else saveTodos(todos);
-    renderTodos(getTodos());
+    proj ? saveProjects(getProjects()) : saveTodos(todos);
   }
+  // ← no render here
 }
 
 export function updateTodoDueDate(id, newDate) {
@@ -72,13 +72,13 @@ export function updateTodoDueDate(id, newDate) {
   const t = list.find(t => t.id === id);
   if (t) {
     t.dueDate = newDate;
-    if (proj) saveProjects(getProjects());
-    else saveTodos(todos);
-    renderTodos(getTodos());
+    proj ? saveProjects(getProjects()) : saveTodos(todos);
   }
+  // ← no render here
 }
 
-export function filterTodosByDueDates(when, list = getTodos()) {
+/** FILTER BUILDER */
+export function filterTodosByDueDates(list, when = 'all') {
   const today = new Date().toISOString().slice(0, 10);
   switch (when) {
     case 'today':
@@ -92,6 +92,7 @@ export function filterTodosByDueDates(when, list = getTodos()) {
   }
 }
 
+/** SORT BUILDER */
 export function sortTodosByDueDate(list, order = 'none') {
   if (order === 'asc') {
     return [...list].sort((a, b) => a.dueDate.localeCompare(b.dueDate));

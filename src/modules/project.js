@@ -1,11 +1,20 @@
-
 // src/modules/project.js
 import { loadProjects, saveProjects } from './storage.js';
 import { renderProjects, renderTodos } from './ui.js';
 
-const projects = loadProjects();
-let currentProjectId = projects[0]?.id || null;
+// 1️ Load existing projects (or create a default one if none exist)
+let projects = loadProjects();
+if (projects.length === 0) {
+  projects = [
+    { id: Date.now().toString(), name: 'Default', todos: [] }
+  ];
+  saveProjects(projects);
+}
 
+// 2️ Keep track of which project is currently selected
+let currentProjectId = projects[0].id;
+
+// 3️ Public API
 export function getProjects() {
   return projects;
 }
@@ -53,6 +62,7 @@ export function removeProject(id) {
   }
 }
 
+// Helpers for project-scoped todos
 export function addTodoToProject(todo) {
   const proj = getCurrentProject();
   if (proj) {
@@ -64,11 +74,10 @@ export function addTodoToProject(todo) {
 export function removeTodoFromProject(todoId) {
   const proj = getCurrentProject();
   if (proj) {
-    const idx = proj.todos.findIndex(t => t.id === todoId);
-    if (idx > -1) {
-      proj.todos.splice(idx, 1);
+    const i = proj.todos.findIndex(t => t.id === todoId);
+    if (i > -1) {
+      proj.todos.splice(i, 1);
       saveProjects(projects);
     }
   }
 }
-

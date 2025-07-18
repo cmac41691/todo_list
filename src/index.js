@@ -64,4 +64,5 @@ form.addEventListener('submit', e => {
 });
 
 // very first render
+export{ refreshView};
 refreshView();

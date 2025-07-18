@@ -77,17 +77,24 @@ export function updateTodoDueDate(id, newDate) {
   // ← no render here
 }
 
+// src/modules/todo.js
+
 /** FILTER BUILDER */
 export function filterTodosByDueDates(list, when = 'all') {
   const today = new Date().toISOString().slice(0, 10);
+
   switch (when) {
     case 'today':
       return list.filter(t => t.dueDate === today);
+
     case 'overdue':
-      return list.filter(t => t.dueDate < today);
+      return list.filter(t => t.dueDate < today); 
+
     case 'upcoming':
-      return list.filter(t => t.dueDate > today);
-    default:
+      // include everything due today or later
+      return list.filter(t => t.dueDate >= today);
+
+    default: // 'all'
       return list;
   }
 }

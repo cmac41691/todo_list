@@ -1,5 +1,5 @@
 // src/modules/ui.js
-import { removeTodo, toggleTodo } from './todo.js';
+import { toggleTodo, removeTodo } from './todo.js';
 import { getProjects, getCurrentProject } from './project.js';
 
 export function renderProjects() {
@@ -9,8 +9,8 @@ export function renderProjects() {
     const opt = document.createElement('option');
     opt.value = p.id;
     opt.textContent = p.name;
-    if (p.id === getCurrentProject()?.id) opt.selected = true;
-    select.append(opt);
+    if (getCurrentProject()?.id === p.id) opt.selected = true;
+    select.appendChild(opt);
   });
 }
 
@@ -20,37 +20,26 @@ export function renderTodos(todos) {
 
   todos.forEach(t => {
     const li = document.createElement('li');
-    li.classList.add('todo-item');
+    li.className = 'todo-item';
 
-    // checkbox
-    const chk = document.createElement('input');
-    chk.type = 'checkbox';
-    chk.checked = t.done;
-    chk.addEventListener('change', () => {
-      toggleTodo(t.id);
-      // after toggle we need a full refresh
-      // (import & call refreshView from index.js)
-    });
-    li.append(chk);
+    // 1) checkbox
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = t.done;
+    cb.addEventListener('change', () => toggleTodo(t.id));
+    li.appendChild(cb);
 
-    // text + due date
+    // 2) text + due date
     const span = document.createElement('span');
     span.textContent = `${t.text} (due ${t.dueDate})`;
-    if (t.done) span.style.textDecoration = 'line-through';
-    li.append(span);
+    li.appendChild(span);
 
-    // delete button
-    const btn = document.createElement('button');
-    btn.textContent = '✕';
-    btn.classList.add('delete-btn');
-    btn.addEventListener('click', () => {
-      removeTodo(t.id);
-      // after delete we need a full refresh
-      // (import & call refreshView from index.js)
-    });
-    li.append(btn);
+    // 3) delete button
+    const del = document.createElement('button');
+    del.textContent = '✕';
+    del.addEventListener('click', () => removeTodo(t.id));
+    li.appendChild(del);
 
-    list.append(li);
+    list.appendChild(li);
   });
 }
-

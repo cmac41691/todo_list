@@ -1,4 +1,5 @@
 // src/index.js
+
 import './style.css';
 
 import {
@@ -23,11 +24,13 @@ import {
 
 import { renderProjects, renderTodos } from './modules/ui.js';
 
-// Grab your DOM elements
+// — Grab your DOM elements —
 const form          = document.getElementById('todo-form');
 const input         = document.getElementById('todo-input');
 const due           = document.getElementById('todo-due');
 const projectSelect = document.getElementById('project-select');
+const renameBtn     = document.getElementById('rename-project');
+const deleteBtn     = document.getElementById('delete-project');
 const filterSelect  = document.getElementById('filter-select');
 const sortSelect    = document.getElementById('sort-select');
 
@@ -36,8 +39,10 @@ if (getProjects().length === 0) {
   createProject('Default');
 }
 
-// single entry-point to re-render
+// single entry-point to re-render everything
 function refreshView() {
+  renderProjects(); // redraw project <select>
+
   let list = getTodos();
   list = filterTodosByDueDates(list, filterSelect.value);
   list = sortTodosByDueDate(list, sortSelect.value);
@@ -45,15 +50,43 @@ function refreshView() {
 }
 
 // INITIAL HOOKUPS
-renderProjects();
+
+// switching projects
 projectSelect.addEventListener('change', e => {
   selectProject(e.target.value);
-  renderProjects();
   refreshView();
 });
+
+// rename-project
+renameBtn.addEventListener('click', () => {
+  const current = getProjects().find(p => p.id === projectSelect.value);
+  const newName = prompt('New project name:', current.name);
+  if (newName && newName.trim()) {
+    renameProject(current.id, newName.trim());
+    refreshView();
+  }
+});
+
+// delete-project
+deleteBtn.addEventListener('click', () => {
+  const id = projectSelect.value;
+  if (confirm('Delete this project and all its tasks?')) {
+    removeProject(id);
+
+    // if none remain, re-create “Default”
+    if (getProjects().length === 0) createProject('Default');
+
+    // switch to first project
+    selectProject(getProjects()[0].id);
+    refreshView();
+  }
+});
+
+// filtering & sorting
 filterSelect.addEventListener('change', refreshView);
 sortSelect.addEventListener('change',   refreshView);
 
+// adding a new todo
 form.addEventListener('submit', e => {
   e.preventDefault();
   const text = input.value.trim();
@@ -64,5 +97,7 @@ form.addEventListener('submit', e => {
 });
 
 // very first render
-export{ refreshView};
 refreshView();
+
+// export for tests or UI imports if needed
+export { refreshView };

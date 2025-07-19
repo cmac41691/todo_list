@@ -2,25 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Todo List</title>
 </head>
 <body>
   <h1>Todo List</h1>
 
   <form id="todo-form">
-    <input
-      type="text"
-      id="todo-input"
-      placeholder="What needs doing?"
-      required
-      autocomplete="off"
-    />
+    <input type="text" id="todo-input" placeholder="What needs doing?" required autocomplete="off"/>
     <button type="submit">Add</button>
-    <input type="date" id="todo-due" />
+    <input type="date" id="todo-due"/>
   </form>
 
   <div class="filter-bar">
@@ -34,6 +25,9 @@
 
     <label for="project-select">Project:</label>
     <select id="project-select"></select>
+    <!-- ← ADD THESE TWO BUTTONS HERE → -->
+    <button id="rename-project" type="button">Rename</button>
+    <button id="delete-project" type="button">Delete</button>
 
     <label for="sort-select">Sort:</label>
     <select id="sort-select">
@@ -47,5 +41,5 @@
 
   <!-- Webpack will inject main.js here -->
   <script src="main.js"></script>
-</body> 
+</body>
 </html>
